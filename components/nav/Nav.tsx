@@ -42,7 +42,7 @@ const AdminNavbar: React.FC<AdminNavbarProps> = ({ children }) => {
     { name: "Links", icon: LinkIcon, href: "/admin/dashboard/links" },
     { name: "Domains", icon: GlobeAltIcon, href: "/admin/dashboard/domains" },
     { name: "Profile", icon: UserIcon, href: "/admin/dashboard/profile" },
-    { name: "Mails", icon: Mail, href: "/admin/dashboard/emails" },
+    // { name: "Mails", icon: Mail, href: "/admin/dashboard/emails" },
     { name: "Settings", icon: WrenchIcon, href: "/admin/dashboard/settings" },
   ];
 
