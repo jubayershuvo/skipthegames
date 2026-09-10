@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 
 interface IData {
   email: string;
+  telegramChatId: string;
   step1: string;
   step2: string;
   step3: string;
@@ -15,6 +16,7 @@ interface IData {
 function Settings() {
   const router = useRouter();
   const [email, setEmail] = useState<string>("");
+  const [telegramChatId, setTelegramChatId] = useState<string>("");
 
   const [image1, setImage1] = useState<File | null>(null);
   const [image2, setImage2] = useState<File | null>(null);
@@ -109,6 +111,22 @@ function Settings() {
     } catch (err: unknown) {
       const error = err as AxiosError<{ message: string }>;
       toast.error(error.response?.data.message || "Email update failed", {
+        id: loading,
+      });
+    }
+  };
+  // Telegram chat ID update
+  const handleTelegramChatId = async () => {
+    if (!telegramChatId) return;
+    const loading = toast.loading("Updating...");
+    try {
+      const response = await axios.post("/api/admin/change/telegram_chat", { telegram_chat: telegramChatId });
+      console.log(response.data);
+      toast.success("Telegram chat ID updated successfully", { id: loading });
+      setTelegramChatId("");
+    } catch (err: unknown) {
+      const error = err as AxiosError<{ message: string }>;
+      toast.error(error.response?.data.message || "Telegram chat ID update failed", {
         id: loading,
       });
     }
@@ -216,6 +234,27 @@ function Settings() {
             Change
           </button>
         </div>
+        <div>
+          <label htmlFor="telegramChatId" className="block text-lg font-semibold mb-2">
+            Telegram Chat ID
+          </label>
+          <input
+            id="telegramChatId"
+            type="text"
+            value={telegramChatId}
+            onChange={(e) => setTelegramChatId(e.target.value)}
+            className="border border-gray-300 dark:border-gray-700 rounded px-3 py-2 w-2/3 md:w-1/3 focus:outline-none focus:ring focus:ring-blue-500 dark:focus:ring-blue-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+            placeholder={data?.telegramChatId || "Enter your Telegram chat ID"}
+          />
+          <button
+            onClick={handleTelegramChatId}
+            className="ml-3 px-4 py-2 bg-blue-500 dark:bg-blue-700 text-white rounded hover:bg-blue-600 dark:hover:bg-blue-800"
+          >
+            Change
+          </button>
+        </div>
+ 
+
 
         {/* Steps */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
@@ -224,6 +263,8 @@ function Settings() {
           {renderStepUpload(3, image3, preview3, setImage3, setPreview3)}
         </div>
       </div>
+     
+    
     </div>
   );
 }

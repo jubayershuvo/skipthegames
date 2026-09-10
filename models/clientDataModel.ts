@@ -22,6 +22,10 @@ const clientDataSchema = new Schema(
       default: "",
       trim: true,
     },
+    telegramChatId: {
+      type: String,
+      trim: true,
+    },
   },
   { timestamps: true }
 );

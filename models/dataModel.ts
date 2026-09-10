@@ -31,7 +31,7 @@ const dataSchema = new Schema(
       type: Array,
       default: ["http://localhost:3000"],
       trim: true,
-    },
+    }
   },
   { timestamps: true }
 );
