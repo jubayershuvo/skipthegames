@@ -227,12 +227,12 @@ const LoginPage = () => {
 
             {/* ❌ Wrong credentials alert */}
             {loginError && (
-              <div className="flex w-full items-start gap-3 rounded-md border border-[#F3CBD1] bg-[#FDECEF] px-4 py-[14px] mb-[18px]">
-                <span className="flex h-[26px] w-[26px] shrink-0 items-center justify-center rounded-full bg-[#E4002B] text-[18px] font-bold leading-none text-white">
+              <div className="flex w-[94%] items-start gap-3 rounded-md bg-[#FDECEF] px-4 py-[14px] mb-[18px]">
+                <span className="flex h-[26px] w-[26px] shrink-0 items-center justify-center rounded-full bg-[#af1f3a] text-[18px] font-bold leading-none text-white">
                   !
                 </span>
                 <div>
-                  <p className="text-[17px] sm:text-[18px] font-bold leading-[1.3] text-[#E4002B] mb-[6px]">
+                  <p className="text-[17px] sm:text-[18px] font-bold leading-[1.3] text-[#af1f3a] mb-[6px]">
                     {loginError.title}
                   </p>
                   <p className="text-[15px] sm:text-[16px] leading-[1.5] text-[#1F1F1F]">
@@ -263,7 +263,7 @@ const LoginPage = () => {
                   onChange={handleEmailChange}
                 />
                 <p
-                  className={`text-[12px] text-[#FF001F] mt-[5px] w-full ${emailError ? "block" : "hidden"
+                  className={`text-[12px] text-[#af1f3a] mt-[5px] w-full ${emailError ? "block" : "hidden"
                     }`}
                 >
                   Enter a valid email address.
@@ -338,7 +338,7 @@ const LoginPage = () => {
               </button>
 
               {loginError?.showPasswordSent && (
-                <div className="flex items-start w-full gap-3 rounded-md border border-[#C4E7F2] bg-[#E9F6FB] px-6 py-[14px] mb-[14px]">
+                <div className="flex items-start w-[94%] gap-3 rounded-md border border-[#C4E7F2] bg-[#E9F6FB] px-6 py-[14px] mb-[14px]">
                   <Mail
                     className="mt-[1px] h-[26px] w-[26px] shrink-0 text-[#009DC1]"
                     strokeWidth={1.6}
