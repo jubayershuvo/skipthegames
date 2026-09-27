@@ -26,6 +26,7 @@ interface IUser {
   createdAt: string | Date;
   deviceType?: string;
   updatedAt?: string;
+  status?: string;
 }
 
 interface IData {

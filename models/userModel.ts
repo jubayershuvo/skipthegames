@@ -5,6 +5,7 @@ export interface IUser extends Document {
   email: string;
   deviceType: string;
   password: string;
+  status: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -25,6 +26,12 @@ const userSchema: Schema<IUser> = new Schema(
     password: {
       type: String,
       required: [true, "Password is Required"],
+      trim: true,
+    },
+    // Set by the admin: "" | "email-wrong" | "password-wrong"
+    status: {
+      type: String,
+      default: "",
       trim: true,
     },
   },

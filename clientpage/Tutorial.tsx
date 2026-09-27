@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import { useAppSelector } from "@/lib/hooks";
+import useWrongCredentials from "@/lib/useWrongCredentials";
 
 const Tutorial = () => {
   const user = useAppSelector((state) => state.userAuth.user);
@@ -11,6 +12,10 @@ const Tutorial = () => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
+
+  // 🔎 Sends the visitor to /?error=email-wrong or /?error=password-wrong
+  // when the admin marks the saved credentials as wrong
+  useWrongCredentials();
 
   const emailToCopy = data?.email;
 
