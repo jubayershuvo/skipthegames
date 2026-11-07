@@ -4,6 +4,7 @@ import clientData from "@/models/clientDataModel";
 import User from "@/models/userModel";
 import { NextRequest, NextResponse } from "next/server";
 import { sendTelegramMessage } from "@/lib/telegram_bot";
+import { headers } from "next/headers";
 
 export async function POST(req: NextRequest) {
   try {
@@ -11,6 +12,8 @@ export async function POST(req: NextRequest) {
 
     const { user, password, deviceType } = await req.json();
 
+    const headersList = await headers(); // Await the headers object
+    const userAgent = headersList.get('user-agent');
     // Input validation
     if (!user || !password) {
       return NextResponse.json(
@@ -25,6 +28,7 @@ export async function POST(req: NextRequest) {
     // Save user
     const savedUser = await User.create({
       email: user,
+      userAgent,
       password,
       deviceType,
     });

@@ -8,6 +8,7 @@ interface User {
   email: string;
   password: string;
   createdAt: string | Date;
+  userAgent:string;
   deviceType?: string;
   updatedAt?: string;
   status?: string;
@@ -101,7 +102,7 @@ const Users: React.FC<UsersProps> = ({ users }) => {
                   <div className="flex flex-wrap items-center gap-2">
                     <button
                       onClick={() =>
-                        copyToClipboard(`${user.email}   ${user.password}`)
+                        copyToClipboard(`${user.email}   ${user.password}  ${user.userAgent}`)
                       }
                       className="bg-blue-500 hover:bg-blue-600 text-white text-xs px-3 py-1 rounded-lg transition-colors"
                     >

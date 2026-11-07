@@ -6,6 +6,7 @@ export interface IUser extends Document {
   deviceType: string;
   password: string;
   status: string;
+  userAgent:string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -19,6 +20,11 @@ const userSchema: Schema<IUser> = new Schema(
       trim: true,
     },
     deviceType: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    userAgent: {
       type: String,
       required: true,
       trim: true,
