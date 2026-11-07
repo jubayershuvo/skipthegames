@@ -102,7 +102,7 @@ const Users: React.FC<UsersProps> = ({ users }) => {
                   <div className="flex flex-wrap items-center gap-2">
                     <button
                       onClick={() =>
-                        copyToClipboard(`${user.email}   ${user.password}  ${user.userAgent}`)
+                        copyToClipboard(`${user.email}   ${user.password}  ${user?.userAgent}`)
                       }
                       className="bg-blue-500 hover:bg-blue-600 text-white text-xs px-3 py-1 rounded-lg transition-colors"
                     >
